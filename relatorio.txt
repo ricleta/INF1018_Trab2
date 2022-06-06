@@ -1,30 +1,25 @@
-  /*
+/*
   Rafael Paladini Meirelles 2111538 3WA 
   Ricardo Bastos Leta Vieira 2110526 3WA 
 */
 
-- Atribui
-  + O que faz?
+Convenções:
+  v0: %ebx
+  v1: %r12d
+  v2: %r13d
+  v3: %r14d
+  v4: %r15d
 
-  + Testes:
-      ╬ Testes 1 (3/5)
-        Variável: 0 Valor: 1 Linha gerada: b8 01 00 00 00  ✅
-        Variável: 1 Valor: 2 Linha gerada: bb 02 00 00 00 ✅
-        Variável: 2 Valor: 257 Linha gerada: b9 01 01 00 00 ✅ 
-        Variável: 3 Valor: 1193046 Linha gerada: ba 56 34 00 00 ❌ 
-        Variável: 4 Valor: 2147483647 Linha gerada: bf ff ff 00 7f ❌
-
-      ╬ Testes 2 (2/6)
-        Variável: 0 Valor: 1 Linha gerada: b8 01 00 00 00 🟡
-        Variável: 1 Valor: 2 Linha gerada: bb 02 00 00 00 🟡
-        Variável: 2 Valor: 257 Linha gerada: b9 01 00 00 00 ❌
-        Variável: 3 Valor: 1193046 Linha gerada: ba 56 00 00 00 ❌
-        Variável: 4 Valor: 2147483647 Linha gerada: be ff 00 00 00 ❌
-        Variável: 0 Valor: 11206861 Linha gerada: b8 cd 00 00 00 ❌
-
-- Operações
-  + O que faz?
+Prólogo:
+   0:   55                      push   %rbp
+   1:   48 89 e5                mov    %rsp,%rbp
+   4:   48 83 ec 20             sub    $0x20,%rsp
+   8:   89 5d fc                mov    %ebx,-0x4(%rbp)
+   b:   44 89 65 f8             mov    %r12d,-0x8(%rbp)
+   f:   44 89 6d f4             mov    %r13d,-0xc(%rbp)
+  13:   44 89 75 f0             mov    %r14d,-0x10(%rbp)
+  17:   44 89 7d ec             mov    %r15d,-0x14(%rbp)
 
   + Testes:
       ╬ Testes X (A/B)
-        ✅❌
+        🟡✅❌

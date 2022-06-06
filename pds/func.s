@@ -12,10 +12,17 @@
   12:   01 d8                   add    %ebx,%eax
   14:   c3 
 
-*/
-
 L1:
   movl    $0x3,%eax
 
   movl    $-1,%ebx
   addl    $1,%eax
+*/
+
+/********************************************************/
+
+movl $1, %eax
+movl $100, %eax
+movl $10000, %eax
+movl $2345, %eax
+movl $0xffffffff, %eax
