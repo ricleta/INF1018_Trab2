@@ -17,12 +17,42 @@ L1:
 
   movl    $-1,%ebx
   addl    $1,%eax
+
+Convenções:
+  v0: %ebx
+  v1: %r12d
+  v2: %r13d
+  v3: %r14d
+  v4: %r15d
 */
-
 /********************************************************/
-
+movl %ebx, %eax;
+ret
+movl %r12d, %eax;
+ret
+movl %r13d, %eax;
+ret
+movl %r14d, %eax;
+ret
+movl %r15d, %eax;
+ret
+movl %edi, %eax
+ret
+movl $0, %eax
+ret
 movl $1, %eax
-movl $100, %eax
-movl $10000, %eax
-movl $2345, %eax
-movl $0xffffffff, %eax
+ret
+movl $-1, %eax
+ret
+movl $300, %eax
+ret
+movl $-300, %eax
+ret
+movl $70000, %eax
+ret
+movl $-70000, %eax
+ret
+movl $19000000, %eax
+ret
+movl $-19000000, %eax
+ret

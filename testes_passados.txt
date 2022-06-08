@@ -1,0 +1,2 @@
+  int testes_quebra_int[10] = {1, 10, 300, 70000, 17000000, -1, 0, -400, -100000, -20000000};
+  testa_quebra_int(testes_quebra_int, 10);

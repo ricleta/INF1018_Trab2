@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "gera_codigo.h"
+#include "rascunho.h"
 
+/*
 int main(int argc, char *argv[])
 {
   FILE *fp;
@@ -9,56 +11,60 @@ int main(int argc, char *argv[])
   funcp funcLBS;
   // int res = 0;
   
-  /* Abre o arquivo para leitura */
   fp = fopen("lbs1.txt", "r");
 
-  /* Gera o codigo */
   gera_codigo(fp, code, &funcLBS);
   // if (funcLBS == NULL) 
   // {
   //   printf("Erro na geracao\n");
   // }
   
-  /* Chama a função gerada */
   // res = (*funcLBS)(12);
 
   return 0;
 }
+*/
 
 unsigned char * processa_ret(char var, int id){
-  unsigned char * vetor = malloc(3);
+  unsigned char * vetor = malloc(6);
   switch(var){
     case 'v':{
       // Retorna variável
+      
       switch (id){
         // v0
         case 0:{
           vetor[0] = 0x89;
-          vetor[1] = 0xd8;
+          vetor[1] = 0xd8;          
+          vetor[2] = 0xc3;
           break;
         }
         case 1:{
           vetor[0] = 0x44;
           vetor[1] = 0x89;
           vetor[2] = 0xe0;
+          vetor[3] = 0xc3;
           break;
         }
         case 2:{
           vetor[0] = 0x44;
           vetor[1] = 0x89;
           vetor[2] = 0xe8;
+          vetor[3] = 0xc3;
           break;
         }
         case 3:{
           vetor[0] = 0x44;
           vetor[1] = 0x89;
-          vetor[2] = 0xf0;
+          vetor[2] = 0xf0;          
+          vetor[3] = 0xc3;
           break;
         }
         case 4:{
           vetor[0] = 0x44;
           vetor[1] = 0x89;
-          vetor[2] = 0xf8;
+          vetor[2] = 0xf8;         
+          vetor[3] = 0xc3;
           break;
         }
       }
@@ -68,16 +74,36 @@ unsigned char * processa_ret(char var, int id){
       // Retorna parâmetro
       vetor[0] = 0x89;
       vetor[1] = 0xf8;
+      vetor[2] = 0xc3;
       break;
     }
     case '$':{
+      
       // Retorna inteiro
+      vetor[0] = 0xb8;
+      
+      unsigned char bytes[4];
+      quebra_int(id, bytes);
+      
+      vetor[1] = bytes[3];
+      vetor[2] = bytes[2];
+      vetor[3] = bytes[1];
+      vetor[4] = bytes[0];
+      vetor[5] = 0xc3;
+    
       break;
     }
+
   }
+  return vetor;
 }
 
-
+void quebra_int(int inteiro, unsigned char bytes[4]){
+  bytes[0] = (inteiro & 0xff000000) >> 24;
+  bytes[1] = (inteiro & 0x00ff0000) >> 16;
+  bytes[2] = (inteiro & 0x0000ff00) >> 8;
+  bytes[3] = inteiro & 0x000000ff;
+}
 void gera_codigo (FILE *file, unsigned char code[], funcp *entry)
 {
   int line = 1;

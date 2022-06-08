@@ -23,3 +23,268 @@ Prólogo:
   + Testes:
       ╬ Testes X (A/B)
         🟡✅❌
+    quebra_int 
+      Testes 1 (10/10):  
+      Executando teste 1 (1):✅
+      Byte 1: 00
+      Byte 2: 00
+      Byte 3: 00
+      Byte 4: 01
+      Executando teste 2 (10):✅
+      Byte 1: 00
+      Byte 2: 00
+      Byte 3: 00
+      Byte 4: 0a
+      Executando teste 3 (300):✅
+      Byte 1: 00
+      Byte 2: 00
+      Byte 3: 01
+      Byte 4: 2c
+      Executando teste 4 (70000):✅
+      Byte 1: 00
+      Byte 2: 01
+      Byte 3: 11
+      Byte 4: 70
+      Executando teste 5 (17000000):✅
+      Byte 1: 01
+      Byte 2: 03
+      Byte 3: 66
+      Byte 4: 40
+      Executando teste 6 (-1):✅
+      Byte 1: ff
+      Byte 2: ff
+      Byte 3: ff
+      Byte 4: ff
+      Executando teste 7 (0):✅
+      Byte 1: 00
+      Byte 2: 00
+      Byte 3: 00
+      Byte 4: 00
+      Executando teste 8 (-400):✅
+      Byte 1: ff
+      Byte 2: ff
+      Byte 3: fe
+      Byte 4: 70
+      Executando teste 9 (-100000):✅
+      Byte 1: ff
+      Byte 2: fe
+      Byte 3: 79
+      Byte 4: 60
+      Executando teste 10 (-20000000):✅
+      Byte 1: fe
+      Byte 2: ce
+      Byte 3: d3
+      Byte 4: 00
+  processa ret
+    Testes 1 (7/15)
+      Executando teste 1 (v0): ❌
+      Byte 1: 89
+      Byte 2: d8
+      Byte 3: 00
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 2 (v1):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: e0
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 3 (v2):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: e8
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 4 (v3):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: f0
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 5 (v4):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: f8
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 6 (p0):✅
+      Byte 1: 89
+      Byte 2: f8
+      Byte 3: c3
+      Byte 4: 00
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 7 ($0):✅
+      Byte 1: b8
+      Byte 2: 00
+      Byte 3: 00
+      Byte 4: 00
+      Byte 5: 00
+      Byte 6: c3
+      Executando teste 8 ($1):❌
+      Byte 1: b8
+      Byte 2: 00
+      Byte 3: 00
+      Byte 4: 00
+      Byte 5: 01
+      Byte 6: c3
+      Executando teste 9 ($-1):✅
+      Byte 1: b8
+      Byte 2: ff
+      Byte 3: ff
+      Byte 4: ff
+      Byte 5: ff
+      Byte 6: c3
+      Executando teste 10 ($300):❌
+      Byte 1: b8
+      Byte 2: 00
+      Byte 3: 00
+      Byte 4: 01
+      Byte 5: 2c
+      Byte 6: c3
+      Executando teste 11 ($-300):❌
+      Byte 1: b8
+      Byte 2: ff
+      Byte 3: ff
+      Byte 4: fe
+      Byte 5: d4
+      Byte 6: c3
+      Executando teste 12 ($70000):❌
+      Byte 1: b8
+      Byte 2: 00
+      Byte 3: 01
+      Byte 4: 11
+      Byte 5: 70
+      Byte 6: c3
+      Executando teste 13 ($-70000):❌
+      Byte 1: b8
+      Byte 2: ff
+      Byte 3: fe
+      Byte 4: ee
+      Byte 5: 90
+      Byte 6: c3
+      Executando teste 14 ($19000000):❌
+      Byte 1: b8
+      Byte 2: 01
+      Byte 3: 21
+      Byte 4: ea
+      Byte 5: c0
+      Byte 6: c3
+      Executando teste 15 ($-19000000):❌
+      Byte 1: b8
+      Byte 2: fe
+      Byte 3: de
+      Byte 4: 15
+      Byte 5: 40
+      Byte 6: c3
+    Testes 2 (15/15):
+      Executando teste 1 (v0): ✅
+      Byte 1: 89
+      Byte 2: d8
+      Byte 3: c3
+      Byte 4: 00
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 2 (v1):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: e0
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 3 (v2):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: e8
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 4 (v3):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: f0
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 5 (v4):✅
+      Byte 1: 44
+      Byte 2: 89
+      Byte 3: f8
+      Byte 4: c3
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 6 (p0):✅
+      Byte 1: 89
+      Byte 2: f8
+      Byte 3: c3
+      Byte 4: 00
+      Byte 5: 00
+      Byte 6: 00
+      Executando teste 7 ($0):✅
+      Byte 1: b8
+      Byte 2: 00
+      Byte 3: 00
+      Byte 4: 00
+      Byte 5: 00
+      Byte 6: c3
+      Executando teste 8 ($1):✅
+      Byte 1: b8
+      Byte 2: 01
+      Byte 3: 00
+      Byte 4: 00
+      Byte 5: 00
+      Byte 6: c3
+      Executando teste 9 ($-1):✅
+      Byte 1: b8
+      Byte 2: ff
+      Byte 3: ff
+      Byte 4: ff
+      Byte 5: ff
+      Byte 6: c3
+      Executando teste 10 ($300):✅
+      Byte 1: b8
+      Byte 2: 2c
+      Byte 3: 01
+      Byte 4: 00
+      Byte 5: 00
+      Byte 6: c3
+      Executando teste 11 ($-300):✅
+      Byte 1: b8
+      Byte 2: d4
+      Byte 3: fe
+      Byte 4: ff
+      Byte 5: ff
+      Byte 6: c3
+      Executando teste 12 ($70000):✅
+      Byte 1: b8
+      Byte 2: 70
+      Byte 3: 11
+      Byte 4: 01
+      Byte 5: 00
+      Byte 6: c3
+      Executando teste 13 ($-70000):✅
+      Byte 1: b8
+      Byte 2: 90
+      Byte 3: ee
+      Byte 4: fe
+      Byte 5: ff
+      Byte 6: c3
+      Executando teste 14 ($19000000):✅
+      Byte 1: b8
+      Byte 2: c0
+      Byte 3: ea
+      Byte 4: 21
+      Byte 5: 01
+      Byte 6: c3
+      Executando teste 15 ($-19000000):✅
+      Byte 1: b8
+      Byte 2: 40
+      Byte 3: 15
+      Byte 4: de
+      Byte 5: fe
+      Byte 6: c3
