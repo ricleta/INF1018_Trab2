@@ -97,7 +97,105 @@ unsigned char * processa_ret(char var, int id){
   }
   return vetor;
 }
-
+unsigned char * processa_zret(char var1, int id1, char var2, int id2){
+  unsigned char * vetor = malloc(9);
+  unsigned char * ret;
+  switch(var1){
+    case 'v':{
+        ret = processa_ret(var2, id2);
+        switch (id1){
+        // v0
+        case 0:{
+          vetor[0] = 0x83;
+          vetor[1] = 0xfb;          
+          vetor[2] = 0x00;
+          vetor[3] = 0x75;
+          vetor[4] = 0x03;
+          vetor[5] = ret[0];
+          vetor[6] = ret[1];
+          vetor[7] = ret[2];
+          break;
+        }
+        case 1:{
+          vetor[0] = 0x41;
+          vetor[1] = 0x83;
+          vetor[2] = 0xfc;
+          vetor[3] = 0x00;     
+          vetor[4] = 0x75;         
+          vetor[5] = 0x04;
+          vetor[6] = ret[0];
+          vetor[7] = ret[1];
+          vetor[8] = ret[2];
+          vetor[9] = ret[3];
+          break;
+        }
+        case 2:{
+          vetor[0] = 0x41;
+          vetor[1] = 0x83;
+          vetor[2] = 0xfd;
+          vetor[3] = 0x00;
+          vetor[4] = 0x75;
+          vetor[5] = 0x04;
+          vetor[6] = ret[0];
+          vetor[7] = ret[1];
+          vetor[8] = ret[2];
+          vetor[9] = ret[3];
+          break;
+        }
+        case 3:{
+          vetor[0] = 0x41;
+          vetor[1] = 0x83;
+          vetor[2] = 0xfe;          
+          vetor[3] = 0x00;
+          vetor[4] = 0x75;
+          vetor[5] = 0x04;
+          vetor[6] = ret[0];
+          vetor[7] = ret[1];
+          vetor[8] = ret[2];
+          vetor[9] = ret[3];
+          break;
+        }
+        case 4:{
+          vetor[0] = 0x41;
+          vetor[1] = 0x83;
+          vetor[2] = 0xff;         
+          vetor[3] = 0x00;
+          vetor[4] = 0x75;  
+          vetor[5] = 0x04;
+          vetor[6] = ret[0];
+          vetor[7] = ret[1];
+          vetor[8] = ret[2];
+          vetor[9] = ret[3];
+          break;
+        }
+      }
+      break;
+    }
+    case 'p':{
+      ret = processa_ret(var2, id2);
+      vetor[0] = 0x83;
+      vetor[1] = 0xff;
+      vetor[2] = 0x00;
+      vetor[3] = 0x75;
+      vetor[4] = 0x03;
+      vetor[5] = ret[0];
+      vetor[6] = ret[1];
+      vetor[7] = ret[2];
+      break;
+    }
+    case '$':{
+      if(id1 == 0){
+        ret = processa_ret(var2, id2);
+        vetor[0] = ret[0];
+        vetor[1] = ret[1];
+        vetor[2] = ret[2];
+        vetor[3] = ret[3];
+        vetor[4] = ret[4];
+        vetor[5] = ret[5];
+      break;
+    }
+  }
+}
 void quebra_int(int inteiro, unsigned char bytes[4]){
   bytes[0] = (inteiro & 0xff000000) >> 24;
   bytes[1] = (inteiro & 0x00ff0000) >> 16;

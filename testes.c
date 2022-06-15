@@ -27,10 +27,19 @@ void testa_processa_ret(char * vars, int * ids, int num_testes){
   }
 }
 
+
+void testa_processa_zret(char * vars1, int *ids1, char *vars2, int *ids2, int num_testes){
+  unsigned char * result;
+  for(int j=0; j<num_testes; j++){
+    result = processa_zret(vars1[j], ids1[j], vars2[j], ids2[j]);
+    printf("Executando teste %d (%c%d %c%d):\n", j+1, vars1[j], ids1[j], vars2[j], ids2[j]);
+        
+    for(int i=0; i<11; i++){
+      printf("Byte %d: %02x\n", i + 1, result[i]);
+    }
+  }
+}
 int main(){
-  char vars[15] = {'v', 'v', 'v', 'v', 'v', 'p', '$', '$', '$', '$', '$', '$', '$', '$', '$'};
-  
-  int ids[15] = {0, 1, 2, 3, 4, 0, 0, 1, -1, 300, -300, 70000, -70000, 19000000, -19000000};
-  testa_processa_ret(vars, ids, 15);
+
   return 0;
 }
