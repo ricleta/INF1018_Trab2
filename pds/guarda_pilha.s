@@ -1,0 +1,5 @@
+movl %ebx, -4(%rbp)
+movl %r12d, -8(%rbp)
+movl %r13d, -12(%rbp)
+movl %r14d, -16(%rbp)
+movl %r15d, -20(%rbp)
