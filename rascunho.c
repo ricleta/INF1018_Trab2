@@ -241,6 +241,7 @@ void prologo( unsigned char * vetor)
   vetor[7] = 0x20;
 }
 
+// varpc = varpc opr varpc
 // Incompleto
 unsigned char * aloca_variavel(int n, char var, int id)
 {
@@ -393,6 +394,20 @@ unsigned char * aloca_variavel(int n, char var, int id)
   return vetor;
 }
 
+void processa_operacao(char v1, int id1, char op, char v2, int id2, unsigned char * vetor){
+  switch(op){
+    case '+':{
+      break;
+    }
+    case '-':{
+      break;
+    }
+    case 'x':{
+      break;
+    }
+  }
+}
+
 void processa_call(int called, int tam, int * funcs, unsigned char * vetor)
 {
   unsigned char * buffer = malloc(19);
@@ -401,7 +416,7 @@ void processa_call(int called, int tam, int * funcs, unsigned char * vetor)
   concatena(vetor, 0, buffer, 19);
   
   vetor[20] = 0xe8;
-  int t = 0 - tam + funcs[called];
+  int t = funcs[called] - tam;
   quebra_int(t, buffer);
   concatena(vetor, 20, buffer, 4);
 
@@ -455,10 +470,7 @@ void gera_codigo (FILE *file, unsigned char code[], funcp *entry)
   int func_atual = 0;
   unsigned char * cdm = malloc(500);
   unsigned char * buffer = malloc(43);
-  // FILE *file;
-
-  tam_codigo += 8;
-
+  
   if (file == NULL) 
   {
     perror ("nao conseguiu abrir arquivo!");
@@ -546,8 +558,8 @@ void gera_codigo (FILE *file, unsigned char code[], funcp *entry)
             perror("comando invalido");
           }
           processa_call(f, tam_codigo, funcs, buffer);
-          concatena(cdm, tam_codigo, buffer, 20);
-          tam_codigo += 20;
+          concatena(cdm, tam_codigo, buffer, 43);
+          tam_codigo += 43;
           printf("%c%d = call %d %c%d\n",var0, idx0, f, var1, idx1);
         }
         else 

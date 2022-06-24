@@ -1,0 +1,1 @@
+void processa_function(int ** funcs, int * func_atual, int * tam_codigo, unsigned char * cdm);
