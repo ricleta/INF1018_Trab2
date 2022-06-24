@@ -1,0 +1,487 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// tipo ponteiro para função que recebe um inteiro e retorna um inteiro
+typedef int (*funcp) (int x);
+
+typedef struct vct
+{
+  unsigned char * vetor;
+  int tam;
+} s_vct;
+
+s_vct cria_vct(unsigned char * vetor)
+{
+  s_vct x;
+  x.vetor = vetor;
+  x.tam = 0;
+  return x;
+}
+
+void quebra_int(int inteiro, unsigned char bytes[4])
+{
+  bytes[3] = (inteiro & 0xff000000) >> 24;
+  bytes[2] = (inteiro & 0x00ff0000) >> 16;
+  bytes[1] = (inteiro & 0x0000ff00) >> 8;
+  bytes[0] = inteiro & 0x000000ff;
+}
+
+void concatena (s_vct *arr1, unsigned char * arr2, int tam2)
+{
+  for(int i=0; i < tam2; i++)
+  {
+    arr1->vetor[arr1->tam + i] = arr2[i];
+  }
+  arr1->tam += tam2;
+}
+
+unsigned char pos_pilha(int id)
+{
+  return (unsigned char)((id+1) * -4);
+}
+
+void pilha_para_reg(int id, unsigned char * vetor)
+{
+  vetor[0] = 0xb8;
+  vetor[1] = 0x5d;
+  vetor[2] = pos_pilha(id);
+}
+
+void pilha_para_aux(int id, unsigned char * vetor)
+{
+  vetor[0] = 0x44;
+  vetor[1] = 0xb8;
+  vetor[2] = 0x65;
+  vetor[3] = pos_pilha(id);
+}
+
+void reg_para_pilha(int id, unsigned char * vetor)
+{
+  vetor[0] = 0x89;
+  vetor[1] = 0x5d;
+  vetor[2] = pos_pilha(id);
+}
+
+void prologo( unsigned char * vetor)
+{
+  vetor[0] = 0x55;
+  vetor[1] = 0x48;
+  vetor[2] = 0x89;
+  vetor[3] = 0xe5;
+  vetor[4] = 0x48;
+  vetor[5] = 0x83;
+  vetor[6] = 0xec;
+  vetor[7] = 0x20;
+}
+
+void prep_ret (unsigned char * vetor)
+{
+  vetor[0] = 0x89;
+  vetor[1] = 0xd8;
+}
+
+void salva_parametro (unsigned char * vetor)
+{
+  vetor[0] = 0x89;
+  vetor[1] = 0x7d;
+  vetor[2] = 0xe8;
+}
+
+void pega_ret(unsigned char * vetor)
+{
+  vetor[0] = 0x89;
+  vetor[1] = 0xc3;
+}
+
+void ret(unsigned char * vetor)
+{
+  vetor[0] = 0xc9;
+  vetor[1] = 0xc3;
+}
+
+void num_para_reg(int num, s_vct * arr)
+{
+  unsigned char * mini_buffer = malloc(4);
+  
+  arr->vetor[arr->tam] = 0xbb;
+  arr->tam += 1;
+  
+  quebra_int(num, mini_buffer);
+  concatena(arr, mini_buffer, 4);
+  free(mini_buffer);
+}
+
+void num_para_aux(int num, s_vct * arr)
+{
+  unsigned char * mini_buffer = malloc(4);
+
+  arr->vetor[0] = 0x41;
+  arr->vetor[1] = 0xbc;
+  arr->tam += 2;
+  
+  quebra_int(num, mini_buffer);
+  concatena(arr, mini_buffer, 4);
+  free(mini_buffer);
+}
+
+void operation(char op, unsigned char * vetor)
+{
+  switch(op)
+  {
+    case '+':
+    {
+      vetor[0] = 0x44;
+      vetor[1] = 0x01;
+      vetor[2] = 0xe3;
+      break;
+    }
+    case '-':
+    {
+      vetor[0] = 0x44;
+      vetor[1] = 0x29;
+      vetor[2] = 0xe3;
+      break;
+    }
+    case '*':
+    {
+      vetor[0] = 0x41;
+      vetor[1] = 0x0f;
+      vetor[2] = 0xaf;
+      vetor[3] = 0xdc;
+      break;
+    }
+  }
+}
+
+void processa_function(int ** funcs, int * func_atual, s_vct * cdm)
+{
+  unsigned char * buffer = malloc(8);
+  
+  *funcs[*func_atual] = cdm->tam;
+  *func_atual += 1;
+
+  prologo(buffer);
+  concatena(cdm, buffer, 8);
+
+  salva_parametro(buffer);
+  concatena(cdm, buffer, 3);
+}
+
+void processa_end(s_vct * cdm)
+{
+  unsigned char local[2] = {0xc9, 0xc3}; 
+  concatena(cdm, local, 2);
+}
+
+void processa_ret(char var, int id, s_vct * cdm)
+{
+  unsigned char * buffer = malloc(100);
+  if(var == '$')
+  {
+    num_para_reg(id, cdm);
+  }
+  else
+  {
+    if(var == 'p')
+    {
+      id = 5;
+    }
+    
+    pilha_para_reg(id, buffer);
+    concatena(cdm, buffer, 3);
+  }
+  
+  prep_ret(buffer);
+  concatena(cdm, buffer, 2);
+  
+  free(buffer);
+}
+
+void processa_zret(char var1, int id1, s_vct * cdm, char var2, int id2)
+{
+  unsigned char * buffer = malloc(100);
+  
+  if(var1 == '$')
+  {
+    if(id1 == 0)
+    {
+      if(var2 == '$')
+      {
+        cdm->vetor[cdm->tam] = 0xbb;
+        cdm->tam += 1;
+
+        quebra_int(id2, buffer);
+        concatena(cdm, buffer, 4);
+
+      }
+      else
+      {
+        pilha_para_reg(id2, buffer);
+        concatena(cdm, buffer, 3);
+      }
+    }
+    else
+    {
+      free(buffer);
+      return;
+    }
+  }
+  else
+  {
+    if(var1 == 'p')
+    {
+      id1 = 5;
+    }
+    pilha_para_reg(id1, buffer);
+
+    unsigned char local[5] = {0x83, 0xfb, 0x00, 0x75, 0x04};
+    concatena(cdm, local, 5);
+
+    if(var2 == '$')
+    {
+      num_para_reg(id2, cdm);
+    }
+    else
+    {
+      if(var2 == 'p')
+      {
+        id2 = 5;
+      }
+
+      pilha_para_reg(id2, buffer);
+      concatena(cdm, buffer, 3);
+      
+      prep_ret(buffer);
+      concatena(cdm, buffer, 2);
+    }
+  } 
+  
+  ret(buffer);
+  concatena(cdm, buffer, 2);
+  free(buffer);
+}
+
+void processa_call(char varp, int idp, int id, int called, int * funcs, s_vct * cdm)
+{
+  int t;
+  unsigned char * buffer = malloc(50);
+
+  if(varp == '$')
+  {
+    num_para_reg(idp, cdm);
+  }
+  else
+  {
+    if(varp == 'p')
+    {
+      idp = 5;
+    }
+    
+    pilha_para_reg(idp, buffer);
+    concatena(cdm, buffer, 3);
+  }
+  
+  cdm->vetor[cdm->tam] = 0xe8;
+  cdm->tam++;
+
+  t = funcs[called] - cdm->tam;  
+  quebra_int(t, buffer);
+  concatena(cdm, buffer, 4);
+
+  pega_ret(buffer);
+  concatena(cdm, buffer, 2);
+  
+  reg_para_pilha(id, buffer);
+  concatena(cdm, buffer, 3);
+  
+  free(buffer);
+}
+
+void processa_op(int id1, char var2, int id2, char op, char var3, int id3, s_vct * cdm)
+{
+  unsigned char * buffer = malloc(50);
+
+  if(var2 == '$')
+  {
+    num_para_reg(id2, cdm);
+  }
+  else
+  {
+    pilha_para_reg(id2, buffer);
+    concatena(cdm, buffer, 3);
+  }
+
+  if(var3 == '$')
+  {
+    num_para_aux(id3, cdm);
+  }
+  else
+  {
+    pilha_para_aux(id3, buffer);
+    concatena(cdm, buffer, 4);
+  }
+
+  operation(op, buffer);
+  concatena(cdm, buffer, 4);
+
+  reg_para_pilha(id1, buffer);
+  concatena(cdm, buffer, 3);
+
+  free(buffer);
+}
+
+static void error (const char *msg, int line) 
+{
+  fprintf(stderr, "erro %s na linha %d\n", msg, line);
+  exit(EXIT_FAILURE);
+}
+
+void gera_codigo (FILE *myfp, unsigned char code[], funcp *entry) 
+{
+  int line = 1;
+  int  c;
+
+  unsigned char * vetor = malloc(1000);
+  s_vct cdm = cria_vct(vetor);
+
+  int * funcs = malloc(50 /* * sizeof(int) */);
+  int func_atual = 0;
+  while ((c = fgetc(myfp)) != EOF) 
+  {
+    switch (c) 
+    {
+      case 'f': 
+      { /* function */
+        char c0;
+        
+        if (fscanf(myfp, "unction%c", &c0) != 1)
+        {
+          error("comando invalido", line);
+        }        
+        processa_function(&funcs, &func_atual, &cdm);
+        printf("function\n");
+        break;
+      }
+      case 'e': 
+      { /* end */
+        char c0;
+        
+        if (fscanf(myfp, "nd%c", &c0) != 1)
+        {
+          error("comando invalido", line);
+        }        
+
+        processa_end(&cdm);
+        printf("end\n");
+      
+        break;
+      }
+      case 'r': 
+      {  /* retorno incondicional */
+        int idx0;
+        char var0;
+        
+        if (fscanf(myfp, "et %c%d", &var0, &idx0) != 2) 
+        {
+          error("comando invalido", line);
+        }
+        
+        processa_ret(var0, idx0, &cdm);
+        printf("ret %c%d\n", var0, idx0);
+        
+        break;
+      }
+      case 'z': 
+      {  /* retorno condicional */
+        int idx0, idx1;
+        char var0, var1;
+      
+        if (fscanf(myfp, "ret %c%d %c%d", &var0, &idx0, &var1, &idx1) != 4) 
+        {
+          error("comando invalido", line);
+        }        
+
+        processa_zret(var0, idx0, &cdm, var1, idx1);
+        printf("zret %c%d %c%d\n", var0, idx0, var1, idx1);
+        
+        break;
+      }
+      case 'v': 
+      {  /* atribuicao */
+        int idx0;
+        char var0 = c, c0;
+        
+        if (fscanf(myfp, "%d = %c",&idx0, &c0) != 2)
+        {
+          error("comando invalido",line);
+        }
+          
+        if (c0 == 'c') 
+        { /* call */
+          int f, idx1;
+          char var1;
+          
+          if (fscanf(myfp, "all %d %c%d\n", &f, &var1, &idx1) != 3)
+          {
+            error("comando invalido",line);
+          }
+
+          processa_call(var1, idx1, idx0, f, funcs, &cdm);
+          printf("%c%d = call %d %c%d\n",var0, idx0, f, var1, idx1);
+        }
+        else 
+        { /* operaÃ§Ã£o aritmÃ©tica */
+          int idx1, idx2;
+          char var1 = c0, var2, op;
+         
+          if (fscanf(myfp, "%d %c %c%d", &idx1, &op, &var2, &idx2) != 4)
+          {
+            error("comando invalido", line);
+          }          
+
+          processa_op(idx0, var1, idx1, op, var2, idx2, &cdm);
+          printf("%c%d = %c%d %c %c%d\n", var0, idx0, var1, idx1, op, var2, idx2);
+        }
+        
+        break;
+      }
+      default: error("comando desconhecido", line);
+    }
+    
+    line++;
+    fscanf(myfp, " ");
+  }
+
+  for (int j = 0;j < cdm.tam; j++)
+  {
+    code[j] = cdm.vetor[j];
+    printf("%.2x\n", code[j]);
+  }
+  unsigned char * p = &(code[funcs[func_atual]]);
+  *entry = p;
+  
+  // code = cdm.vetor
+}
+
+int main(int argc, char *argv[])
+{
+
+  FILE *fp;
+  unsigned char code[300];
+  funcp funcLBS;
+  int res;
+  
+  fp = fopen("aux.txt", "r");
+  gera_codigo(fp, code, &funcLBS);
+  
+  if (funcLBS == NULL) 
+  {
+    printf("Erro na geracao\n");
+    return 1;
+  }
+  printf("%p, %p, %p\n", &code[0], &funcLBS, funcLBS);
+  res = (*funcLBS)(1);
+
+  printf("%d\n", res);
+  return 0;
+}
