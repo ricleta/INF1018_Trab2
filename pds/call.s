@@ -21,3 +21,5 @@ c2:
   movl $1, %ebx
   call c1
   ret
+
+movl %ebx, %esi

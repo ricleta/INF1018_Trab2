@@ -6,6 +6,6 @@ ret
 L1:
 
 movl %ebx, %eax
-
+movl %eax, %ebx
 leave 
 ret
