@@ -42,7 +42,7 @@ unsigned char pos_pilha(int id)
 
 void pilha_para_reg(int id, unsigned char * vetor)
 {
-  vetor[0] = 0xb8;
+  vetor[0] = 0x8b;
   vetor[1] = 0x5d;
   vetor[2] = pos_pilha(id);
 }
@@ -50,7 +50,7 @@ void pilha_para_reg(int id, unsigned char * vetor)
 void pilha_para_aux(int id, unsigned char * vetor)
 {
   vetor[0] = 0x44;
-  vetor[1] = 0xb8;
+  vetor[1] = 0x8b;
   vetor[2] = 0x65;
   vetor[3] = pos_pilha(id);
 }
@@ -78,6 +78,11 @@ void prep_ret (unsigned char * vetor)
 {
   vetor[0] = 0x89;
   vetor[1] = 0xd8;
+}
+void pilha_para_parametro(int id, unsigned char * vetor){
+  vetor[0] = 0x8b;
+  vetor[1] = 0x7d;
+  vetor[2] = pos_pilha(id);
 }
 
 void salva_parametro (unsigned char * vetor)
@@ -115,8 +120,8 @@ void num_para_aux(int num, s_vct * arr)
 {
   unsigned char * mini_buffer = malloc(4);
 
-  arr->vetor[0] = 0x41;
-  arr->vetor[1] = 0xbc;
+  arr->vetor[arr->tam] = 0x41;
+  arr->vetor[arr->tam + 1] = 0xbc;
   arr->tam += 2;
   
   quebra_int(num, mini_buffer);
@@ -124,6 +129,16 @@ void num_para_aux(int num, s_vct * arr)
   free(mini_buffer);
 }
 
+void num_para_parametro(int num, s_vct *arr){
+  unsigned char * mini_buffer = malloc(4);
+
+  arr->vetor[arr->tam] = 0xbf;
+  arr->tam += 1;
+
+  quebra_int(num, mini_buffer);
+  concatena(arr, mini_buffer, 4);
+  free(mini_buffer);
+}
 void operation(char op, unsigned char * vetor)
 {
   switch(op)
@@ -207,11 +222,7 @@ void processa_zret(char var1, int id1, s_vct * cdm, char var2, int id2)
     {
       if(var2 == '$')
       {
-        cdm->vetor[cdm->tam] = 0xbb;
-        cdm->tam += 1;
-
-        quebra_int(id2, buffer);
-        concatena(cdm, buffer, 4);
+        num_para_reg(id2, cdm);
 
       }
       else
@@ -233,8 +244,9 @@ void processa_zret(char var1, int id1, s_vct * cdm, char var2, int id2)
       id1 = 5;
     }
     pilha_para_reg(id1, buffer);
+    concatena(cdm, buffer, 3);
 
-    unsigned char local[5] = {0x83, 0xfb, 0x00, 0x75, 0x04};
+    unsigned char local[5] = {0x83, 0xfb, 0x00, 0x75, 0x09};
     concatena(cdm, local, 5);
 
     if(var2 == '$')
@@ -251,9 +263,9 @@ void processa_zret(char var1, int id1, s_vct * cdm, char var2, int id2)
       pilha_para_reg(id2, buffer);
       concatena(cdm, buffer, 3);
       
-      prep_ret(buffer);
-      concatena(cdm, buffer, 2);
     }
+    prep_ret(buffer);
+      concatena(cdm, buffer, 2);
   } 
   
   ret(buffer);
@@ -268,7 +280,7 @@ void processa_call(char varp, int idp, int id, int called, int * funcs, s_vct * 
 
   if(varp == '$')
   {
-    num_para_reg(idp, cdm);
+    num_para_parametro(idp, cdm);
   }
   else
   {
@@ -277,7 +289,7 @@ void processa_call(char varp, int idp, int id, int called, int * funcs, s_vct * 
       idp = 5;
     }
     
-    pilha_para_reg(idp, buffer);
+    pilha_para_parametro(idp, buffer);
     concatena(cdm, buffer, 3);
   }
   
@@ -307,6 +319,9 @@ void processa_op(int id1, char var2, int id2, char op, char var3, int id3, s_vct
   }
   else
   {
+    if(var2 == 'p'){
+      id2 = 5;
+    }
     pilha_para_reg(id2, buffer);
     concatena(cdm, buffer, 3);
   }
@@ -322,8 +337,12 @@ void processa_op(int id1, char var2, int id2, char op, char var3, int id3, s_vct
   }
 
   operation(op, buffer);
-  concatena(cdm, buffer, 4);
-
+  if(op == '*'){
+    concatena(cdm, buffer, 4);
+  }
+  else{
+  concatena(cdm, buffer, 3);
+    }
   reg_para_pilha(id1, buffer);
   concatena(cdm, buffer, 3);
 
@@ -340,6 +359,7 @@ void gera_codigo (FILE *myfp, unsigned char code[], funcp *entry)
 {
   int line = 1;
   int  c;
+  int aux;
 
   unsigned char * vetor = malloc(1000);
   s_vct cdm = cria_vct(vetor);
@@ -448,6 +468,12 @@ void gera_codigo (FILE *myfp, unsigned char code[], funcp *entry)
       default: error("comando desconhecido", line);
     }
     
+    for(int i=aux; i < cdm.tam; i++){
+      printf("%.2x\n", cdm.vetor[i]);
+    }
+    
+    //printf("%d\n", cdm.tam);
+    aux = cdm.tam;
     line++;
     fscanf(myfp, " ");
   }
@@ -462,7 +488,7 @@ void gera_codigo (FILE *myfp, unsigned char code[], funcp *entry)
   
   // code = cdm.vetor
 }
-
+//int a(int b);
 int main(int argc, char *argv[])
 {
 
@@ -471,7 +497,7 @@ int main(int argc, char *argv[])
   funcp funcLBS;
   int res;
   
-  fp = fopen("aux.txt", "r");
+  fp = fopen("teste3.txt", "r");
   gera_codigo(fp, code, &funcLBS);
   
   if (funcLBS == NULL) 
@@ -480,8 +506,8 @@ int main(int argc, char *argv[])
     return 1;
   }
   printf("%p, %p, %p\n", &code[0], &funcLBS, funcLBS);
-  res = (*funcLBS)(1);
-
+  res = (*funcLBS)(2);
+  //int res2 = a(5);
   printf("%d\n", res);
   return 0;
 }
