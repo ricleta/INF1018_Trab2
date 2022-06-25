@@ -296,7 +296,7 @@ void processa_call(char varp, int idp, int id, int called, int * funcs, s_vct * 
   cdm->vetor[cdm->tam] = 0xe8;
   cdm->tam++;
 
-  t = funcs[called] - cdm->tam;  
+  t = &cdm->vetor[funcs[called]] - &cdm->vetor[cdm->tam] - 4;
   quebra_int(t, buffer);
   concatena(cdm, buffer, 4);
 
@@ -506,7 +506,7 @@ int main(int argc, char *argv[])
     return 1;
   }
   printf("%p, %p, %p\n", &code[0], &funcLBS, funcLBS);
-  res = (*funcLBS)(2);
+  res = (*funcLBS)(6);
   //int res2 = a(5);
   printf("%d\n", res);
   return 0;
