@@ -1597,31 +1597,68 @@ Prólogo:
         Byte 10: ec
 
 + Testes de programs lbs:
-  ╬ Testes X (A/B)
-      ✅❌
+
+main utilizada:
+#include <stdio.h>
+#include "gera_codigo.c"
+
+int main(int argc, char *argv[])
+{
+
+  FILE *fp;
+  unsigned char code[300];
+  funcp funcLBS;
+  int res;
+  
+  fp = fopen(argv[1], "r");
+  gera_codigo(fp, code, &funcLBS);
+  
+  if (funcLBS == NULL) 
+  {
+    printf("Erro na geracao\n");
+    return 1;
+  }
+
+  res = (*funcLBS)(atoi(argv[2]);
+  printf("%d \n", res);
+  
+  return 0;
+}
+
   ╬ Testes do enunciado do trabalho
-    ※ Teste 1 (funcao que retorna constante)
+    ※ Teste 1 (funcao que retorna constante) ✅
       funcao lbs: 
         function
         ret $100
         end
 
-      parametro:
+      parametro: N/A, qualquer parametro retorna 100
+      retorno esperado: 100
+        
+      output: > ./main teste1.txt 100
+      function
+      ret $100
+      end
+      100
 
-      output:
-
-    ※ Teste 2 (funcao que implementa uma função f(x) = x + 1)
+    ※ Teste 2 (funcao que implementa uma função f(x) = x + 1) ✅
       funcao lbs: 
         function
         v0 = p0 + $1
         ret v0
         end
 
-      parametro:
+      parametro: 3
+      retorno esperado: 4
 
-      output:
+      output: > ./main teste2.txt 3
+      function
+      v0 = p0 + $1
+      ret v0
+      end
+      4 
 
-    ※ Teste 3 (funcao que calcula o fatorial de seu parametro)
+    ※ Teste 3 (funcao que calcula o fatorial de seu parametro) ✅
       funcao lbs: 
         function
         zret p0 $1
@@ -1632,11 +1669,21 @@ Prólogo:
         ret v0
         end
 
-      parametro:
+      parametro: 3
+      retorno esperado: 6
 
-      output:
+      output: > ./main teste3.txt 3
+        function
+        zret p0 $1
+        v0 = p0 + $0
+        v1 = v0 - $1
+        v1 = call 0 v1
+        v0 = v0 * v1
+        ret v0
+        end
+        6 
 
-    ※ Teste 4 (funcao que calcula a soma dos quadrados de 1 ate o valor do seu parametro, usando uma função auxiliar para calcular o quadrado de um numero)
+    ※ Teste 4 (funcao que calcula a soma dos quadrados de 1 ate o valor do seu parametro, usando uma função auxiliar para calcular o quadrado de um numero) ✅
       funcao lbs:
         function
         v0 = p0 * p0
@@ -1651,26 +1698,68 @@ Prólogo:
         ret v0
         end
 
-      parametro:
+      parametro: 3
+      retorno esperado: 14
 
-      output:
+      output: > ./main teste4.txt 3
+        function
+        v0 = p0 * p0
+        ret v0
+        end
+        function
+        zret p0 $0
+        v0 = p0 - $1
+        v1 = call 0 p0
+        v0 = call 1 v0
+        v0 = v0 + v1
+        ret v0
+        end
+        14 
 
   ╬ Nossos testes
-    ※ Teste 1 ()
+    ※ Teste 1 (funcao que determina o dobro de um numero) ✅
       funcao lbs:
+        function
+        v0 = p0 * $2
+        ret v0
+        end
 
-      parametro:
+      parametro: 3
+      retorno esperado: 6
 
-      output:
+      output: >main teste5.txt 3
+        function
+        v0 = p0 * $2
+        ret v0
+        end
+        6
 
-    ※ Teste 2
+    ※ Teste 2 (funcao que calcula o somatorio dos numeros de 1 ate o parametro)
       funcao lbs:
+        function
+        zret p0 $0
+        v0 = p0 + $0
+        v1 = v0 - $1
+        v1 = call 0 v1
+        v0 = v0 + v1
+        ret v0
+        end
 
-      parametro:
+      parametro: 5
+      retorno esperado: 15
 
-      output:
+      output: >main teste6.txt 5
+        function
+        zret p0 $0
+        v0 = p0 + $0
+        v1 = v0 - $1
+        v1 = call 0 v1
+        v0 = v0 + v1
+        ret v0
+        end
+        15 
 
-    ※ Teste 3 (funcai que calcula o dobro do sucessor do parametro usando uma funcao auxiliar para calcular o dobro)
+    ※ Teste 3 (funcao que calcula o dobro do sucessor do parametro usando uma funcao auxiliar para calcular o dobro) ✅
       funcao lbs:
         function
         v0 = p0 * $2
@@ -1682,13 +1771,54 @@ Prólogo:
         ret v1
         end
 
-      parametro:
+      parametro: 3
+      retorno esperado: 8 
 
-      output:
+      output: >main teste7.txt 3
+        function
+        v0 = p0 * $2
+        ret v0
+        end
+        function
+        v0 = p0 + $1
+        v1 = call 0 v0
+        ret v1
+        end
+        8 
 
-    ※ Teste 4
+    ※ Teste 4 (funcao que calcula a soma dos antecessores do parametro ((p0 - 1) + (p0 -2))) ✅
       funcao lbs:
+        function
+        v0 = p0 - $1
+        ret v0
+        end
+        function
+        v0 = p0 - $2
+        ret v0
+        end
+        function
+        v0 = call 0 p0
+        v1 = call 1 p0
+        v0 = v0 + v1
+        ret v0
+        end
 
-      parametro:
+      parametro: 6
+      retorno esperado: 9 
 
-      output:
+      output: >main teste8.txt 6
+        function
+        v0 = p0 - $1
+        ret v0
+        end
+        function
+        v0 = p0 - $2
+        ret v0
+        end
+        function
+        v0 = call 0 p0
+        v1 = call 1 p0
+        v0 = v0 + v1
+        ret v0
+        end
+        9 
