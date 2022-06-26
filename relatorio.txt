@@ -4,17 +4,15 @@
 */
 
 Convenções:
-  v0: %ebx
-  v1: %r12d
-  v2: %r13d
-  v3: %r14d
-  v4: %r15d
-
   v0: -4
   v1: -8
   v2: -12
   v3: -16
   v4: -20
+  p0 = -24
+  
+  registrador principal: %ebx
+  registrador auxiliar: %r12d
 
 Prólogo:
    0:   55                      push   %rbp
@@ -25,7 +23,7 @@ Prólogo:
    f:   44 89 6d f4             mov    %r13d,-0xc(%rbp)
   13:   44 89 75 f0             mov    %r14d,-0x10(%rbp)
   17:   44 89 7d ec             mov    %r15d,-0x14(%rbp)
-
+Para os testes de programas LBS, pule para a linha 1597
   + Testes de funções auxliares:  
     ╬ quebra_int 
       ※ Testes 1 (10/10):
@@ -1734,7 +1732,7 @@ int main(int argc, char *argv[])
         end
         6
 
-    ※ Teste 2 (funcao que calcula o somatorio dos numeros de 1 ate o parametro)
+    ※ Teste 2 (funcao que calcula o somatorio dos numeros de 1 ate o parametro)✅
       funcao lbs:
         function
         zret p0 $0
